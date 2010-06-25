@@ -1,0 +1,50 @@
+This is an osx version of a forth interpreter written in c, that came 
+from usenet postings.  The original documentation is in the file 
+cforth.doc.  
+I have hacked the code as necessary to get it to compile (more or less) 
+cleanly on OSX 10.5.
+The program works, but there's still several bugs present in this port.
+For one thing, you can't save your environment, and reload it from 
+within the forth environment.
+
+There are several other issues (only hex and base 10 are recognized, 
+though octal and binary are coded into the files).
+Well, binary is in the version I have here, but I broke something in 
+adding the binary command, so that version isn't uploaded just yet.
+But in any case, this initial version was good enough to get me through 
+most of the forth tutorial located at:
+http://forth.com/starting-forth/index.html
+
+It was only when the tutorial got into discussing arrays, cells, and 
+memory manipulation that this version of forth fell short.
+This is one thing I'd like to fix.
+I'm hoping to make cforth handle everything the above mentioned tutorial 
+talks about and thereby make it a fully usable version of forth.
+Since the original version was released into the public domain, seeking 
+permission for posting it on sourceforge shouldn't be necessary, and no 
+attempt has been done to do so.
+However, if anyone knows where he may be found, please feel free to 
+point him to this sourceforge page.  I know he said there would be no 
+fixes of the code, and that's fine, I'd just like him to know that 
+nearly 25 years after his initial release, cforth is still out there.
+
+Another point.
+I'm certainly not the world's best C guy, I'd likely be classified as an 
+intermediate C programmer (at best) so any comments on code, how to do 
+things, patches, and the like are of course all welcome.
+I will of course incorporate as many fixes as I can, and of course I'll 
+continue working on it myself, and hopefully get some of the issues 
+fixed, but until that happens, be advised that there are lots of things 
+wrong with this release, and it may not work for you, or it may work 
+fine, that's all up to how it's used, and how much you need it to do.
+
+I've included osx intel binaries (I'll have universal binaries in the 
+next release) so osx users can run the program right away, and try some 
+of the samples from the above mentioned tutorial.
+If anyone has any questions, please use the sourceforge forums to bring 
+them up, as my email host has a nasty habbit of bouncing emails, because 
+it thinks everything under the sun is spam, so don't feel bad about 
+posting there, I'll keep an eye on them.
+Enjoy.
+June 2010.
+ 
