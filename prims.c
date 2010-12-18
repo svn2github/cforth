@@ -150,7 +150,7 @@ encl1:
 	if (mem[current] == delim) goto encl1;
 
 	push(offset);
-	if (mem[current] == NULL) {
+	if (mem[current] == 0) {
 		offset++;
 		push (offset);
 		offset--;
@@ -162,7 +162,7 @@ encl2:
 	current++;
 	offset++;
 	if (mem[current] == delim) goto encl4;
-	if (mem[current] != NULL) goto encl2;
+	if (mem[current] != 0) goto encl2;
 
 	/* mem[current] is null.. */
 	push (offset);
@@ -422,7 +422,7 @@ prslw()
 					/* extend if necessary */
 	if (fpos >= bfilesize) {
 	    if (flag == 0) { 		/* write */
-		printf("Extending block file to %D bytes\n", fpos+1024);
+		printf("Extending block file to %ld bytes\n", fpos+1024);
 		/* the "2" below is the fseek magic number for "beyond end" */
 		fseek(blockfile, (fpos+1024) - bfilesize, 2);
 		bfilesize = ftell(blockfile);
@@ -483,3 +483,4 @@ psave()
 	puts("Saved. Exit FORTH.");
 	exit(0);
 }
+

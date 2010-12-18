@@ -1,17 +1,7 @@
 %{
-/* LEX input for FORTH input file scanner */
+/* FLEX input for FORTH input file scanner */
 /* 
 	Specifications are as follows:
-	This file must be run through "sed" to change 
-		yylex () {
-	to
-		TOKEN *yylex () {
-	where the sed script is
-		sed "s/yylex () {/TOKEN *yylex () {/" lex.yy.c
-
-	Note that spaces have been included above so these lines won't be
-	mangled by sed; in actuality, the two blanks surrounding () are
-	removed.
 
 	The function "yylex()" always returns a pointer to a structure:
 
@@ -31,7 +21,7 @@
 		C_CR for a literal Carriage Return '\r'
 		C_TAB for a literal Tab '\t'
 		C_BSLASH for a literal backslash '\\'
-		C_IT for an other character literal 'x' where x is possibly '
+		C_LIT for an other character literal 'x' where x is possibly '
 		STRING_LIT for a string literal (possibly containing \")
 		COMMENT for a left-parenthesis (possibly beginning a comment)
 		PRIM for "PRIM"
@@ -54,6 +44,9 @@
 
 */
 %}
+%option array
+%option noyymore
+%option noyywrap
 
 decimal	[0-9]
 hex	[0-9A-Fa-f]
@@ -61,9 +54,12 @@ octal	[0-7]
 white	[ \t\n\r\f]
 tail	/{white}
 
+
 %{
 #include "forth.lex.h"
 TOKEN token;
+extern TOKEN *yylex(void);
+#define YY_DECL TOKEN *yylex(void)
 %}
 
 %%
@@ -87,8 +83,10 @@ TOKEN token;
 \"(\\\"|[^"])*\"{tail}	{ token.type = STRING_LIT; token.text = yytext; 
 				return &token; }
 
-"("{tail}		{ token.type = COMMENT; token.text = yytext;
+"( "[^)]*" )"{tail}     /* comments */ { token.type = COMMENT; token.text = yytext;
 				return &token; }
+	/* was: "("{tail}  with skipcomment() that did getchar in nf.c */
+	/* was: "( "[^)\n]*" )"{tail} for single line comments */
 
 "PRIM"{tail}		{ token.type = PRIM; token.text = yytext;
 				return &token; }

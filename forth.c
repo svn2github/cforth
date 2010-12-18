@@ -51,16 +51,19 @@ char *sfilename;	/* save file name  (change with -s ) */
              ----------------------------------------------------
 */
 
-errexit(s,p1,p2)		/* An error occurred -- clean up (?) and
-				   exit. */
+/* An error occurred -- clean up (?) and exit. */
+errexit()
 {
-    printf(s,p1,p2);
     printf("ABORT FORTH!\nDumping to %s... ",DUMPFILE);
     fflush(stdout);
     memdump();
     puts("done.");
     exit(1);
 }
+
+#define ERREXIT0(string) {printf("%s",string); errexit();}
+#define ERREXIT1(string,parm) {printf(string,parm); errexit();}
+
 
 Callot (n)			/* allot n words in the dictionary */
 short n;
@@ -71,11 +74,11 @@ short n;
     if (mem[DP] + GULPFRQ > mem[LIMIT]) {	/* need space */
 	newsize = mem[DP] + GULPSIZE;
 	if (newsize > MAXMEM && MAXMEM)
-		errexit("ATTEMPT TO GROW PAST MAXMEM (%d) WORDS\n",MAXMEM);
+		ERREXIT1("ATTEMPT TO GROW PAST MAXMEM (%d) WORDS\n",MAXMEM);
 
 	mem = (short *)realloc((char *)mem, newsize*sizeof(*mem));
 	if (mem == NULL)
-		errexit("REALLOC FAILED\n");
+		ERREXIT0("REALLOC FAILED\n");
 	mem[LIMIT] = newsize;
     }
 }
@@ -84,7 +87,7 @@ push(v)			/* push value v to cstack */
 short v;
 {
     if (csp <= TIB_END)
-	errexit("PUSH TO FULL CALC. STACK\n");
+	ERREXIT0("PUSH TO FULL CALC. STACK\n");
     mem[--csp] = v;
 }
 
@@ -102,21 +105,21 @@ rpush(v)
 short v;
 {
     if (rsp <= INITS0)
-	errexit("PUSH TO FULL RETURN STACK");
+	ERREXIT0("PUSH TO FULL RETURN STACK");
     mem[--rsp] = v;
 }
 
 short rpop()
 {
     if (rsp >= INITR0)
-	errexit("POP FROM EMPTY RETURN STACK!");
+	ERREXIT0("POP FROM EMPTY RETURN STACK!");
     return (mem[rsp++]);
 }
 
 pkey()			/* (KEY) -- wait for a key & return it */
 {
     int c;
-    if ((c = getchar()) == EOF) errexit("END-OF-FILE ENCOUNTERED");
+    if ((c = getchar()) == EOF) ERREXIT0("END-OF-FILE ENCOUNTERED");
     return(c);
 }
 
@@ -254,7 +257,7 @@ next1:				/* This is for the SPECIAL CASE */
 	case PRSLW	:  prslw(); break;
 	case PSAVE	:  psave(); break;
 	case PCOLD	:  pcold(); break;
-	default		:  errexit("Bad execute-code %d\n",p); break;
+	default		:  ERREXIT1("Bad execute-code %d\n",p); break;
 	}
     }
 }
@@ -380,8 +383,7 @@ char *argv[];
 	}
 
 	if ((mem = (short *)calloc(size, sizeof(*mem))) == NULL) {
-		fprintf(stderr, "Forth: unable to malloc(%d,%d)\n",
-			size, sizeof(*mem));
+		fprintf(stderr, "Forth: unable to malloc(%d,%ld)\n", size, sizeof(*mem));
 		exit(1);
 	}
 
@@ -421,26 +423,18 @@ char *s;
 {
 	fprintf(stderr, "usage:\n");
 	fprintf(stderr, "%s [-t[n]] [-d[n]] [-p xxxx] [-n]\n",s);
-	fputs(stderr, "\t[-c corename] [-b blockname] [-s savename]\n");
-	fputs(stderr, "Where:\n");
-	fputs(stderr,
-"-t[n]\t\tsets trace mode\n");
-	fputs(stderr,
-"-d[n]\t\tsets trace mode and debug mode (waits for newline)");
-	fputs(stderr,
-"\t\t[n] above sets stack depth to display. Single digit, 0-9. Default 0.\n");
-	fputs(stderr,
-"-p xxxx\t\tsets a breakpoint at xxxx (in hex), shows stack when reached\n");
-	fputs(stderr,
-"-n\t\tleaves stdout line-buffered\n");
-	fprintf(stderr,
-"-c corename\tuses corename as the core image (default %s without -c)\n",
+	fputs("\t[-c corename] [-b blockname] [-s savename]\n",stderr);
+	fputs("Where:\n",stderr);
+	fputs("-t[n]\t\tsets trace mode\n",stderr);
+	fputs("-d[n]\t\tsets trace mode and debug mode (waits for newline)",stderr);
+	fputs("\t\t[n] above sets stack depth to display. Single digit, 0-9. Default 0.\n",stderr);
+	fputs("-p xxxx\t\tsets a breakpoint at xxxx (in hex), shows stack when reached\n",stderr);
+	fputs("-n\t\tleaves stdout line-buffered\n",stderr);
+	fprintf(stderr, "-c corename\tuses corename as the core image (default %s without -c)\n",
 		COREFILE);
-	fprintf(stderr,
-"-b blockname\tuses blockname as the blockfile (default %s without -b)\n",
+	fprintf(stderr, "-b blockname\tuses blockname as the blockfile (default %s without -b)\n",
 		BLOCKFILE);
-	fprintf(stderr,
-"-s savename\tuses savename as the save-image file (default %s without -s)\n",
+	fprintf(stderr, "-s savename\tuses savename as the save-image file (default %s without -s)\n",
 		SAVEFILE);
 }
 
@@ -510,7 +504,7 @@ char *s;
  * that is caught in an infinite loop, this won't help any.
  */
 
-sig_int()
+void sig_int()
 {
 	if (qtermflag) {		/* second time? */
 		forceip = mem[ABORTIP];	/* checked each time through next */
@@ -522,7 +516,7 @@ sig_int()
 
 initsignals()
 {
-	signal(SIGINT,sig_int);
+	signal(SIGINT,(sig_t)sig_int);
 }
 
 getblockfile()
@@ -532,8 +526,9 @@ getblockfile()
 	/* the size of the file.					    */
 
 	if ((blockfile = fopen(bfilename, "a+")) == NULL)
-		errexit("Can't open blockfile \"%s\"\n", bfilename);
+		ERREXIT1("Can't open blockfile \"%s\"\n", bfilename);
 	bfilesize = ftell(blockfile);
 
 	printf("Block file has %d blocks.\n",(int) (bfilesize/1024) - 1);
 }
+

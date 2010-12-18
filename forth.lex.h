@@ -11,7 +11,7 @@ struct tokenrec {
 
 #define TOKEN struct tokenrec
 
-TOKEN *yylex();
+TOKEN *yylex(void);
 
 #define DECIMAL		1
 #define OCTAL		2
@@ -36,3 +36,4 @@ TOKEN *yylex();
 #define NUL		21
 #define LIT		22
 #define OTHER		23
+

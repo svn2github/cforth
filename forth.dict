@@ -12,7 +12,7 @@ PRIM ENCLOSE		10	( addr c -- addr next first last <not quite> )
 PRIM KEY		11	( -- c <get next char from input> )
 PRIM (EMIT)		12	( c -- <put char to output> )
 PRIM ?TERMINAL		13	( see if op. interrupted <like w/^C> )
-PRIM CMOVE		14	( src dest count -- <move words>)
+PRIM CMOVE		14	( src dest count -- <move words> )
 PRIM U*			15	( unsigned multiply )
 PRIM U/			16	( unsigned divide )
 PRIM AND		17	( a b -- a&b )
@@ -50,8 +50,8 @@ PRIM DOCON		48	( goes into CF of constants )
 PRIM DOVAR		49	( goes into CF of variables )
 PRIM DOUSE		50	( goes into CF of user variables )
 PRIM -			51	( a b -- a-b )
-PRIM =			52	( a b -- a==b)
-PRIM !=			53	( a b -- a!=b)
+PRIM =			52	( a b -- a==b )
+PRIM !=			53	( a b -- a!=b )
 PRIM <			54	( a b -- a<b )
 PRIM ROT		55	( a b c -- c a b )
 PRIM DODOES		56	( place holder; this value goes into CF )
@@ -146,7 +146,7 @@ CONST SEC/BLK 1
 : HERE		( -- DP )
   DP @ ;
 
-: ,		( V -- <PLACES V AT DP AND INCREMENTS DP>)
+: ,		( V -- <PLACES V AT DP AND INCREMENTS DP> )
   HERE !
   WORDSIZE ALLOT ;	( CHANGE FROM MODEL FOR WORDSIZE )
 
@@ -914,7 +914,7 @@ LABEL SIGN1
 
 : #
   BASE @ M/MOD ROT LIT 9 OVER < 0BRANCH #1
-  LIT 7 +		( 7 is offset to make 'A' come after '9')
+  LIT 7 +		( 7 is offset to make 'A' come after '9' )
 LABEL #1
   LIT '0' + HOLD
 ;
@@ -958,6 +958,8 @@ LABEL VLIST2			( THEN )
   DUP 0= ?TERMINAL OR 0BRANCH VLIST1	( UNTIL )
   DROP
 ;
+
+: WORDS VLIST ;
 
 : .CPU
   (.") "C-CODED FORTH INTERPRETER"	( special string handling )

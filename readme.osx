@@ -48,3 +48,16 @@ posting there, I'll keep an eye on them.
 Enjoy.
 June 2010.
  
+** December 2010
+Compliments of Ken Staton, there is now a clean compile of cforth, and 
+the dictionary file no longer spits out an error, so I'm posting this 
+version for others to download as well.  Ken has been very helpful, and 
+I'm hoping between the two of us, we can make cforth work 100 percent on 
+osx, and get it up to some arbitrary standard we can call a full 
+release.  For now though, the patch is up already, so if you want to 
+download that, and apply it yourself, feel free.  Of course, you could 
+just download the newest zip file which already has the patches 
+included, and work with that as well, it's up to you.  That's what I 
+love about opensource. 
+Enjoy.
+

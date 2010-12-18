@@ -15,7 +15,7 @@
 #define isoctal(c)	(c >= '0' && c <= '7')	/* augument ctype.h */
 
 #define assert(c,s)	(!(c) ? failassert(s) : 1)
-#define chklit()	(!prev_lit ? dictwarn("Qustionable literal") : 1)
+#define chklit()	(!prev_lit ? dictwarn("Questionable literal") : 1)
 
 #define LINK struct linkrec
 #define CHAIN struct chainrec
@@ -50,7 +50,7 @@ short mem[INITMEM];
 
 FILE *outf, *fopen();
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {
@@ -84,7 +84,9 @@ char *argv[];
     writedict();
 
     printf("%s: done.\n", argv[0]);
-}
+    return(0);
+} /* end main */
+
 
 buildcore()			/* set up low core */
 {
@@ -123,7 +125,7 @@ builddict()			/* read the dictionary */
 #ifdef DEBUG
 	    printf(".%s. ",s);
 #endif DEBUG
-	    if ((token == yylex()) == NULL)	/* get the value */
+	    if ((token = yylex()) == NULL)	/* get the value */
 		dicterr("No value following PRIM <word>");
 	    mkword(s,mkval(token));
 	    break;
@@ -205,7 +207,7 @@ builddict()			/* read the dictionary */
 	    if (token->type == NUL) {	/* special zero-named word */
 		int here = dp;		/* new latest */
 #ifdef DEBUG
-		printf("NULL WORD AT 0x%04x\n");
+		printf("NULL WORD AT 0x%04x\n",here);
 #endif DEBUG
 		comma(0xC1);
 		comma(0x80);
@@ -240,7 +242,7 @@ builddict()			/* read the dictionary */
 	    strcpy(s,token->text);
 	    mkstr(s);		/* mkstr compacts the string in place */
 #ifdef DEBUG
-	    printf("string=(%d) \"%s\" ",strlen(s),s);
+	    printf("string=(%d) \"%s\" ",(int)strlen(s),s);
 #endif DEBUG
 	    comma(strlen(s));
 	    {
@@ -254,7 +256,8 @@ builddict()			/* read the dictionary */
 #ifdef DEBUG
 	    printf("comment ");
 #endif DEBUG
-	    skipcomment();
+	    /* skipcomment... */
+	    //while(getchar() != ')') /* ignore */ ;
 	    break;
 
 	case LABEL:
@@ -312,7 +315,8 @@ builddict()			/* read the dictionary */
 	prev_lit = lit_flag;	/* to be used by chklit() next time */
 	lit_flag = 0;
     }
-}
+} /* end builddict() */
+
 
 comma(i)			/* put at mem[dp]; increment dp */
 {
@@ -537,11 +541,6 @@ int n;
 	tmp = mem[n] & ~0x80;		/* mask eighth bit off */
 	if (tmp >= ' ' && tmp <= '~') putc(tmp, stderr);
     }
-}
-
-skipcomment()
-{
-    while(getchar() != ')');
 }
 
 mkstr(s)			/* modifies a string in place with escapes
